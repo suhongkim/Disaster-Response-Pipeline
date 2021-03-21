@@ -110,7 +110,7 @@ avg|0.9100294663319874|0.9037142857142857|0.9099999999999999|0.8745714285714284|
 
 
 ### Web App 
-![screenshot of web app]('images/web_app_capture.png')
+![screenshot of web app](web_screenshot.png)
 
 
 ## Licensing, Authors, Acknowledgements<a name="License"></a>
