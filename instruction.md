@@ -12,3 +12,5 @@
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+Then you need to find the workspace environmental variables with `env | grep WORK`, and you can open a new browser window and go to the address:
+`http://WORKSPACESPACEID-3001.WORKSPACEDOMAIN` replacing WORKSPACEID and WORKSPACEDOMAIN with your values.
