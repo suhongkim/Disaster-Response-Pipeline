@@ -40,9 +40,9 @@ def clean_data(df):
         if df_catg[col].value_counts().shape[0] > 2:
             # replace the numbers of neither 0 or 1 into 0 
             df_catg.loc[df_catg[col] >= 2, col] = 0 
-        if df_catg[col].value_counts().shape[0] < 2:
-            # drop the column (No need to classify)
-            df_catg = df_catg.drop([col], axis=1)
+#         if df_catg[col].value_counts().shape[0] < 2:
+#             # drop the column (No need to classify)
+#             df_catg = df_catg.drop([col], axis=1)
 
     # replace categories column in df with new df_catg 
     df_clean = pd.concat([df, df_catg], axis=1) 
