@@ -17,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.utils.class_weight import compute_sample_weight
 from sqlalchemy import create_engine
-
+from sklearn.externals import joblib
 
 def load_data(database_filepath):
     """ Load the database and define feature(X) and target(Y) variables
@@ -112,18 +112,20 @@ def evaluate_model(model, X_test, Y_test, category_names):
     # generate the report 
     df_report = pd.DataFrame(columns=['accuracy', 'precision', 'recall', 'f1-score', \
                                       'distribution-0', 'distribution-1'])
+  
     for col in Y_test.columns:
         # accuracy score from sklearn 'accruacy_score'
-        accuracy = accuracy_score(Y_test[col], Y_pred[col])
+        df_report.loc[col, 'accuracy'] = accuracy_score(Y_test[col], Y_pred[col])
         # other scores from sklearn 'classification_report'
         sample_weight = compute_sample_weight('balanced', Y_test[col]) # imbalanced dataset 
-        report_str = classification_report(Y_test[col], Y_pred[col]) #, sample_weight=sample_weight)
-        metrics = report_str.split('\n')[5].split()[3:-1] 
-        metrics = [float(m) for m in metrics] # flot conversion   
-        # counts the class
-        distributions = Y_test[col].value_counts().values / Y_test[col].shape[0]
-        # append the results to the df_Report
-        df_report.loc[col,:] =[accuracy] + metrics + distributions.tolist() 
+        report_str = classification_report(Y_test[col], Y_pred[col], sample_weight=sample_weight)
+        metrics = report_str.split('avg / total')[1].split('\n')[0].split()      
+        df_report.loc[col, 'precision'] = float(metrics[0]) 
+        df_report.loc[col, 'recall'] = float(metrics[1]) 
+        df_report.loc[col, 'f1-score'] = float(metrics[2]) 
+        # # counts the class
+        df_report.loc[col, 'distribution-0'] = 1 - (Y_test[col].sum() / Y_test.shape[0])
+        df_report.loc[col, 'distribution-1'] = Y_test[col].sum() / Y_test.shape[0]
     
     # add an average metrics of all categories 
     df_report.loc['avg',:] = df_report.mean()
@@ -171,6 +173,8 @@ def main():
         
         print('Training model...')
         model.fit(X_train, Y_train)
+        
+#         model = joblib.load('models/classifier_rf_36.pkl')
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
